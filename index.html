@@ -14,6 +14,30 @@
   stroke-opacity: .6;
 }
 
+#tooltip {
+      position: absolute;
+      width: auto;
+      height: auto;
+      padding: 10px;
+      background-color: white;
+      -webkit-border-radius: 10px;
+      -moz-border-radius: 10px;
+      border-radius: 10px;
+      -webkit-box-shadow: 4px 4px 10px rgba(0,0,0,0.4);
+      -moz-box-shadow: 4px 4px 10px rgba(0,0,0,0.4);
+      box-shadow: 4px 4px 10px rgba(0,0,0,0.4);
+      pointer-events: none;
+    }
+    #tooltip.hidden {
+      display: none;
+    }
+    #tooltip p {
+      margin: 0;
+      font-family: sans-serif;
+      font-size: 16px;
+      line-height: 20px;
+    }
+
 </style>
 </head>
 
@@ -58,9 +82,23 @@ d3.json("polblogs1.json", function(error, graph) {
       .data(graph.nodes)
     .enter().append("circle")
       .attr("class", "node")
-      .attr("r", 5)
+      .attr("r", 8)
       .style("fill", function(d,i){
         return colores_google(i);
+      })
+      .on("mouseover", function(d){
+        var xP = parseFloat(d3.select(this).attr("cx"));
+        var yP = parseFloat(d3.select(this).attr("cy"));
+
+        d3.select("#tooltip")
+          .style("left", xP + "px")
+          .style("top", yP + "px")
+          .select("#value")
+          .html("<p><strong> Source: "+d.source+" </strong></p><p>Link: <a href='"+d.name+"' target='_blank' >"+d.name+"</a></p>");
+        d3.select("#tooltip").classed("hidden", false);
+      })
+      .on("mouseout", function(){
+        d3.select("#tooltip").classed("hidden", true);  
       })
       .call(force.drag);
 
@@ -79,5 +117,9 @@ d3.json("polblogs1.json", function(error, graph) {
 });
 
 </script>
+<br/>
+    <div id="tooltip" class="hidden">
+    <p><span id="value">100</span></p>
+  </div>
 </body>
 </html>
